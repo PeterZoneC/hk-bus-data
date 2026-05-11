@@ -38,14 +38,17 @@ jobs:
             bus_data.min.json
             bus_data.md5
 
+      - name: Prepare Pages output
+        run: |
+          mkdir -p output
+          cp bus_data.min.json output/
+          cp bus_data.md5 output/
+
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: .
+          folder: output
           branch: gh-pages
-          clean: false
+          clean: true
           commit-message: "Data update ${{ github.run_number }}"
           single-commit: true
-          files: |
-            bus_data.min.json
-            bus_data.md5
