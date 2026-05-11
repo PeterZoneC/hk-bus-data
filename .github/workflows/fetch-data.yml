@@ -1,0 +1,51 @@
+name: Fetch Bus Data
+
+on:
+  schedule:
+    - cron: "10 1,13 * * *"   # 09:10 and 21:10 HKT daily
+  workflow_dispatch:            # allow manual trigger
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run crawler
+        run: python main.py
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bus-data-${{ github.run_number }}
+          retention-days: 7
+          path: |
+            bus_data.json
+            bus_data.min.json
+            bus_data.md5
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .
+          branch: gh-pages
+          clean: false
+          commit-message: "Data update ${{ github.run_number }}"
+          single-commit: true
+          files: |
+            bus_data.min.json
+            bus_data.md5

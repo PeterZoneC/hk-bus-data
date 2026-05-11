@@ -1,0 +1,7 @@
+gtfs.zip
+bus_data.json
+bus_data.min.json
+bus_data.md5
+__pycache__/
+*.pyc
+.DS_Store
